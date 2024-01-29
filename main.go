@@ -51,6 +51,10 @@ func main() {
 		LoginUser(w, r, app)
 	})
 
+	r.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		PollHealth(w, r, &app)
+	}).Methods("GET")
+
 	r.HandleFunc("/{path:.*}", ServeBuild)
 
 	http.Handle("/", r)
