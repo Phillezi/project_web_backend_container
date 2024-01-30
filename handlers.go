@@ -94,6 +94,7 @@ func ServeMember(w http.ResponseWriter, r *http.Request, memberCollection *mongo
 }
 
 func AddMember(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("Got post req with body: %s\n", r.Body)
 	fmt.Fprint(w, "POST member not impl\n\r")
 }
 
