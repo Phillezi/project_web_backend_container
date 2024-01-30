@@ -13,6 +13,9 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+/*
+A handler that serves the files in the build directory.
+*/
 func ServeBuild(w http.ResponseWriter, r *http.Request) {
 	filePath := r.URL.Path
 
@@ -25,12 +28,18 @@ func ServeBuild(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, fullPath)
 }
 
+/*
+A handler that serves the files in the image directory.
+*/
 func ServeImage(w http.ResponseWriter, r *http.Request) {
 	filePath := strings.TrimPrefix(r.URL.Path, "/images/")
 	fullPath := filepath.Join("images", filePath)
 	http.ServeFile(w, r, fullPath)
 }
 
+/*
+A handler that checks the health of the application and then responds with the status.
+*/
 func PollHealth(w http.ResponseWriter, r *http.Request, app *App) {
 	if app.IsOk() {
 		w.WriteHeader(http.StatusOK)
@@ -41,6 +50,9 @@ func PollHealth(w http.ResponseWriter, r *http.Request, app *App) {
 	}
 }
 
+/*
+A handler that serves the content from the mongodb content collection.
+*/
 func ServeContent(w http.ResponseWriter, r *http.Request, contentCollection *mongo.Collection) {
 	var result []TextContent
 
@@ -65,10 +77,16 @@ func ServeContent(w http.ResponseWriter, r *http.Request, contentCollection *mon
 	json.NewEncoder(w).Encode(result)
 }
 
+/*
+A handler for post requests to add content in the database. TODO: Implement
+*/
 func AddContent(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "POST content not impl\n\r")
 }
 
+/*
+A handler that serves the members from the mongodb member collection.
+*/
 func ServeMember(w http.ResponseWriter, r *http.Request, memberCollection *mongo.Collection) {
 	var result []Member
 
@@ -93,11 +111,17 @@ func ServeMember(w http.ResponseWriter, r *http.Request, memberCollection *mongo
 	json.NewEncoder(w).Encode(result)
 }
 
+/*
+A handler for post requests to add members in the database. TODO: Implement
+*/
 func AddMember(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("Got post req with body: %s\n", r.Body)
 	fmt.Fprint(w, "POST member not impl\n\r")
 }
 
+/*
+A handler for logging in, sends a JWT token on successful login.
+*/
 func LoginUser(w http.ResponseWriter, r *http.Request, app App) {
 	username := r.FormValue("username")
 	password := r.FormValue("password")
