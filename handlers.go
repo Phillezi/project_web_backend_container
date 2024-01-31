@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"path/filepath"
 	"strings"
+	"time"
+	"log"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -81,6 +83,7 @@ func ServeContent(w http.ResponseWriter, r *http.Request, contentCollection *mon
 A handler for post requests to add content in the database. TODO: Implement
 */
 func AddContent(w http.ResponseWriter, r *http.Request) {
+	log.Printf("%s : Post Content req from IP:%s\n", time.Now().Format(time.RFC3339), getIPAddress(r))
 	fmt.Fprint(w, "POST content not impl\n\r")
 }
 
@@ -115,7 +118,7 @@ func ServeMember(w http.ResponseWriter, r *http.Request, memberCollection *mongo
 A handler for post requests to add members in the database. TODO: Implement
 */
 func AddMember(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("Got post req with body: %s\n", r.Body)
+	log.Printf("%s : Post Member req from IP:%s\n", time.Now().Format(time.RFC3339), getIPAddress(r))
 	fmt.Fprint(w, "POST member not impl\n\r")
 }
 
@@ -125,6 +128,8 @@ A handler for logging in, sends a JWT token on successful login.
 func LoginUser(w http.ResponseWriter, r *http.Request, app App) {
 	username := r.FormValue("username")
 	password := r.FormValue("password")
+
+	log.Printf("%s : Login attempt: -u:%s, IP:%s\n", time.Now().Format(time.RFC3339), username, getIPAddress(r))
 
 	var user User
 	err := app.userCollection.FindOne(context.Background(), bson.M{"username": username}).Decode(&user)
@@ -148,4 +153,18 @@ func LoginUser(w http.ResponseWriter, r *http.Request, app App) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{"token": tokenString})
+}
+
+/*
+Helper function to get the IP address of a http request.
+*/
+func getIPAddress(r *http.Request) string {
+	ip := r.Header.Get("X-Real-IP")
+	if ip == "" {
+		ip = r.Header.Get("X-Forwarded-For")
+		if ip == "" {
+			ip = r.RemoteAddr
+		}
+	}
+	return ip
 }
