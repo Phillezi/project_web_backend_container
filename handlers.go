@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
-	"log"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -83,7 +82,9 @@ func ServeContent(w http.ResponseWriter, r *http.Request, contentCollection *mon
 A handler for post requests to add content in the database. TODO: Implement
 */
 func AddContent(w http.ResponseWriter, r *http.Request) {
-	log.Printf("%s : Post Content req from IP:%s\n", time.Now().Format(time.RFC3339), getIPAddress(r))
+	go func(ip string) {
+		fmt.Printf("%s : Post Content req from IP:%s\n", time.Now().Format(time.RFC3339), ip)
+	}(getIPAddress(r))
 	fmt.Fprint(w, "POST content not impl\n\r")
 }
 
@@ -118,7 +119,9 @@ func ServeMember(w http.ResponseWriter, r *http.Request, memberCollection *mongo
 A handler for post requests to add members in the database. TODO: Implement
 */
 func AddMember(w http.ResponseWriter, r *http.Request) {
-	log.Printf("%s : Post Member req from IP:%s\n", time.Now().Format(time.RFC3339), getIPAddress(r))
+	go func(ip string) {
+		fmt.Printf("%s : Post Member req from IP:%s\n", time.Now().Format(time.RFC3339), ip)
+	}(getIPAddress(r))
 	fmt.Fprint(w, "POST member not impl\n\r")
 }
 
@@ -129,7 +132,9 @@ func LoginUser(w http.ResponseWriter, r *http.Request, app App) {
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 
-	log.Printf("%s : Login attempt: -u:%s, IP:%s\n", time.Now().Format(time.RFC3339), username, getIPAddress(r))
+	go func(username string, ipaddr string) {
+		fmt.Printf("%s : Login attempt: -u:%s, IP:%s\n", time.Now().Format(time.RFC3339), username, ipaddr)
+	}(username, getIPAddress(r))
 
 	var user User
 	err := app.userCollection.FindOne(context.Background(), bson.M{"username": username}).Decode(&user)
